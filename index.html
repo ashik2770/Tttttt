@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Mini App</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .marquee {
+            width: 100%;
+            background: #ff9800;
+            color: white;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .user-card {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: left;
+        }
+
+        .user-card img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+        }
+
+        .button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 8px 0;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+
+        .button-ads { background: #00d4ff; }
+        .button-withdraw { background: #ffc107; }
+        .button-refer { background: #ff6347; }
+        .button:hover { opacity: 0.8; transform: scale(1.05); }
+
+        .hidden { display: none; }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+        }
+
+        .referral p {
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .copy-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .copy-btn:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+
+    <marquee class="marquee" id="notice">Loading updates...</marquee>
+
+    <div class="container">
+        <div class="user-card" id="userDetails">Loading...</div>
+
+        <p>Total Referrals: <span id="totalReferrals">0</span></p>
+
+        <button class="button button-ads" onclick="showAds()">🎥 Show Ad</button>
+        <p>Points: <span id="points">0</span></p>
+
+        <button class="button button-withdraw" id="withdrawToggle">💰 Withdraw</button>
+
+        <div class="withdrawal hidden" id="withdrawSection">
+            <h3>💰 Request Withdrawal</h3>
+            <p>Minimum Withdraw: <span id="minWithdraw">Loading...</span></p>
+            <input type="number" id="withdrawAmount" placeholder="Amount">
+            <select id="withdrawMethod">
+                <option value="bKash">bKash</option>
+                <option value="Nagad">Nagad</option>
+            </select>
+            <input type="number" id="withdrawNumber" placeholder="Phone Number">
+            <button class="button button-withdraw" id="withdrawButton">Request</button>
+        </div>
+
+        <button class="button button-withdraw" id="withdrawHistoryToggle">📜 Withdraw History</button>
+        <div class="history hidden" id="withdrawHistory">
+            <h3>📜 Your Withdrawals</h3>
+            <ul id="withdrawList"></ul>
+        </div>
+
+        <button class="button button-refer" id="referButton">🔗 Get Referral Link</button>
+        <div class="referral hidden" id="referralSection">
+            <p id="referralLink">Invite friends and earn rewards!</p>
+            <button class="copy-btn" id="copyRefer">📋 Copy</button>
+        </div>
+    </div>
+
+    <script src="//whephiwums.com/vignette.min.js" data-zone="8767766"></script>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+    import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
+
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyBYPrsAIdQ-NTm2_xEgFqNORUmnuSDQgXQ",
+        authDomain: "streamhub-database-2.firebaseapp.com",
+        databaseURL: "https://streamhub-database-2-default-rtdb.firebaseio.com",
+        projectId: "streamhub-database-2",
+        storageBucket: "streamhub-database-2.appspot.com",
+        messagingSenderId: "111701481057",
+        appId: "1:111701481057:web:c722fad6b123636c60bc20",
+        measurementId: "G-RTBGSY68DS"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    let userDetails = {};
+    let points = 0;
+
+    // Fetch user details from Telegram WebApp API
+    function fetchUserDetails() {
+        Telegram.WebApp.ready();
+        const tgUser = Telegram.WebApp.initDataUnsafe.user;
+        if (tgUser) {
+            userDetails = {
+                fullName: `${tgUser.first_name} ${tgUser.last_name || ""}`,
+                username: tgUser.username || "No Username",
+                telegramId: tgUser.id,
+                photo: tgUser.photo_url || "https://via.placeholder.com/60"
+            };
+
+            document.getElementById("userDetails").innerHTML = `
+                <img src="${userDetails.photo}" alt="User">
+                <strong>Name:</strong> ${userDetails.fullName} <br>
+                <strong>Username:</strong> @${userDetails.username} <br>
+                <strong>ID:</strong> ${userDetails.telegramId}
+            `;
+
+            saveUserData();
+        }
+    }
+
+    // Save user data to Firebase
+    function saveUserData() {
+        set(ref(database, 'users/' + userDetails.telegramId), { ...userDetails });
+    }
+
+    // Dummy function to simulate ad display (Replace with actual ad SDK)
+    function show_8767766() {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                alert("Ad Shown (Simulated)");  // Replace with real ad display function
+                resolve();
+            }, 1000);
+        });
+    }
+
+    // Function to show ads and increase points
+    function showAds() {
+        show_8767766().then(() => {
+            points++;
+            document.getElementById("points").textContent = points;
+        });
+    }
+
+    // Load Firebase settings
+    function loadFirebaseSettings() {
+        get(ref(database, 'settings')).then((snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                document.getElementById("minWithdraw").textContent = data.minWithdraw;
+                document.getElementById("totalReferrals").textContent = data.totalReferrals || 0;
+                document.getElementById("notice").textContent = data.notice || "Welcome!";
+            }
+        });
+    }
+
+    // Toggle Withdraw Section
+    document.getElementById("withdrawToggle").addEventListener("click", () => {
+        document.getElementById("withdrawSection").classList.toggle("hidden");
+    });
+
+    // Toggle Withdraw History Section
+    document.getElementById("withdrawHistoryToggle").addEventListener("click", () => {
+        document.getElementById("withdrawHistory").classList.toggle("hidden");
+    });
+
+    // Referral System
+    document.getElementById("referButton").addEventListener("click", () => {
+        const link = `https://t.me/YOUR_TELEGRAM_BOT?start=${userDetails.telegramId}`;
+        document.getElementById("referralLink").innerHTML = `<strong>Your Link:</strong> <a href="${link}" target="_blank">${link}</a>`;
+        document.getElementById("referralSection").classList.remove("hidden");
+    });
+
+    // Copy Referral Link
+    document.getElementById("copyRefer").addEventListener("click", () => {
+        navigator.clipboard.writeText(document.getElementById("referralLink").innerText);
+        alert("Referral link copied!");
+    });
+
+    // Initialize when window loads
+    window.onload = () => {
+        fetchUserDetails();
+        loadFirebaseSettings();
+    };
+
+</script>
+
+</body>
+</html>
