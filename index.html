@@ -3,261 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Mini App</title>
+    <title>Watch And Earn</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
         body {
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            color: white;
+            font-family: 'Arial', sans-serif;
+            background-color: #121212;
+            color: #fff;
             text-align: center;
-            padding: 20px;
+            padding: 40px;
+            margin: 0;
         }
 
-        .container {
-            max-width: 500px;
-            margin: auto;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
+        h1 {
+            color: #00bfff;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
         }
 
-        .marquee {
-            width: 100%;
-            background: #ff9800;
-            color: white;
-            padding: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .user-card {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 15px;
-            border-radius: 12px;
-            text-align: left;
-        }
-
-        .user-card img {
-            width: 60px;
-            height: 60px;
+        .circle {
+            border: 5px solid #00bfff;
             border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            margin: 20px auto;
+            background-color: #222;
+            color: #00ff00;
         }
 
-        .button {
-            width: 100%;
-            padding: 12px;
+        .btn {
+            background-color: #00bfff;
+            color: #fff;
+            padding: 15px 30px;
+            font-size: 18px;
             border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 8px 0;
-            transition: 0.3s;
-            font-weight: bold;
-        }
-
-        .button-ads { background: #00d4ff; }
-        .button-withdraw { background: #ffc107; }
-        .button-refer { background: #ff6347; }
-        .button:hover { opacity: 0.8; transform: scale(1.05); }
-
-        .hidden { display: none; }
-
-        input, select {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 8px;
-            border: none;
-            outline: none;
-        }
-
-        .referral p {
-            font-size: 14px;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 10px;
-            border-radius: 10px;
-        }
-
-        .copy-btn {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 8px;
             border-radius: 5px;
             cursor: pointer;
-            margin-top: 10px;
+            margin: 20px;
+            transition: background-color 0.3s;
+            width: 200px;
         }
 
-        .copy-btn:hover {
-            background: #218838;
+        .btn:hover {
+            background-color: #0099cc;
+        }
+
+        .withdraw-btn {
+            background-color: #4caf50;
+        }
+
+        .withdraw-btn:hover {
+            background-color: #45a049;
+        }
+
+        .withdraw-form {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #withdrawForm input {
+            padding: 10px;
+            margin: 10px 0;
+            width: 60%;
+            font-size: 16px;
+            border: 1px solid #00bfff;
+            background-color: #333;
+            color: #fff;
+        }
+
+        #withdrawMethod {
+            margin: 10px 0;
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #00bfff;
+            font-size: 16px;
+            width: 60%;
+            padding: 10px;
+        }
+
+        .popup {
+            display: none;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 20px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 10px;
+            font-size: 1.5rem;
+        }
+
+        .footer {
+            margin-top: 50px;
+            color: #555;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: #00bfff;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .circle {
+                width: 150px;
+                height: 150px;
+                font-size: 1.5rem;
+            }
+
+            .btn {
+                width: 80%;
+            }
+
+            #withdrawForm input {
+                width: 80%;
+            }
+
+            #withdrawMethod {
+                width: 80%;
+            }
         }
     </style>
 </head>
 <body>
 
-    <marquee class="marquee" id="notice">Loading updates...</marquee>
+    <h1>Mostahid KaKu</h1>
+    <div class="circle">
+        <span id="points">0</span> Points
+    </div>
+    <button class="btn" onclick="showAds()">Show Ad</button>
 
-    <div class="container">
-        <div class="user-card" id="userDetails">Loading...</div>
+    <div class="popup" id="adPopup">Congratulations! You have received 1 Point for viewing an ad!</div>
+    <div class="popup" id="failPopup">Failed to show the ad. Please try again!</div>
 
-        <p>Total Referrals: <span id="totalReferrals">0</span></p>
+    <button class="btn withdraw-btn" onclick="showWithdrawForm()">Request Withdrawal</button>
 
-        <button class="button button-ads" onclick="showAds()">🎥 Show Ad</button>
-        <p>Points: <span id="points">0</span></p>
-
-        <button class="button button-withdraw" id="withdrawToggle">💰 Withdraw</button>
-
-        <div class="withdrawal hidden" id="withdrawSection">
-            <h3>💰 Request Withdrawal</h3>
-            <p>Minimum Withdraw: <span id="minWithdraw">Loading...</span></p>
-            <input type="number" id="withdrawAmount" placeholder="Amount">
-            <select id="withdrawMethod">
-                <option value="bKash">bKash</option>
-                <option value="Nagad">Nagad</option>
-            </select>
-            <input type="number" id="withdrawNumber" placeholder="Phone Number">
-            <button class="button button-withdraw" id="withdrawButton">Request</button>
-        </div>
-
-        <button class="button button-withdraw" id="withdrawHistoryToggle">📜 Withdraw History</button>
-        <div class="history hidden" id="withdrawHistory">
-            <h3>📜 Your Withdrawals</h3>
-            <ul id="withdrawList"></ul>
-        </div>
-
-        <button class="button button-refer" id="referButton">🔗 Get Referral Link</button>
-        <div class="referral hidden" id="referralSection">
-            <p id="referralLink">Invite friends and earn rewards!</p>
-            <button class="copy-btn" id="copyRefer">📋 Copy</button>
-        </div>
+    <div class="withdraw-form" id="withdrawForm">
+        <h3>Enter Your Withdrawal Details</h3>
+        <select id="withdrawMethod">
+            <option value="bkash">bKash</option>
+            <option value="nagad">Nagad</option>
+        </select>
+        <input type="text" id="withdrawNumber" placeholder="Enter bKash/Nagad Number" required>
+        <button class="btn withdraw-btn" onclick="withdrawPoints()">Confirm Withdrawal</button>
     </div>
 
-    <script src="//whephiwums.com/vignette.min.js" data-zone="8767766"></script>
+    <div class="footer">
+        <p>Development by SmartCode BD | <a href="https://t.me/adwatchandearn99_bot" target="_blank">Contact Us</a></p>
+    </div>
 
-    <!-- Firebase SDK -->
-    <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
-    import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
+    <!-- Re-included the ad script -->
+    <script src='//whephiwums.com/vignette.min.js' data-zone='8873343' data-sdk='show_8873343'></script>
 
-    // Firebase Configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyBYPrsAIdQ-NTm2_xEgFqNORUmnuSDQgXQ",
-        authDomain: "streamhub-database-2.firebaseapp.com",
-        databaseURL: "https://streamhub-database-2-default-rtdb.firebaseio.com",
-        projectId: "streamhub-database-2",
-        storageBucket: "streamhub-database-2.appspot.com",
-        messagingSenderId: "111701481057",
-        appId: "1:111701481057:web:c722fad6b123636c60bc20",
-        measurementId: "G-RTBGSY68DS"
-    };
+    <script>
+        // Retrieve points from localStorage or set to 0 if not available
+        let points = localStorage.getItem('points') ? parseInt(localStorage.getItem('points')) : 0;
+        document.getElementById("points").textContent = points;
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
+        const botApiToken = '8138361562:AAHWd_Fs08utaWsOPjp5p8UmUrAehutUrxc';
+        const chatId = '7442526627';
 
-    let userDetails = {};
-    let points = 0;
-
-    // Fetch user details from Telegram WebApp API
-    function fetchUserDetails() {
-        Telegram.WebApp.ready();
-        const tgUser = Telegram.WebApp.initDataUnsafe.user;
-        if (tgUser) {
-            userDetails = {
-                fullName: `${tgUser.first_name} ${tgUser.last_name || ""}`,
-                username: tgUser.username || "No Username",
-                telegramId: tgUser.id,
-                photo: tgUser.photo_url || "https://via.placeholder.com/60"
-            };
-
-            document.getElementById("userDetails").innerHTML = `
-                <img src="${userDetails.photo}" alt="User">
-                <strong>Name:</strong> ${userDetails.fullName} <br>
-                <strong>Username:</strong> @${userDetails.username} <br>
-                <strong>ID:</strong> ${userDetails.telegramId}
-            `;
-
-            saveUserData();
+        function sendMessageToTelegram(message) {
+            const telegramUrl = `https://api.telegram.org/bot${botApiToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+            fetch(telegramUrl)
+                .then(response => response.json())
+                .then(data => console.log("Message sent:", data))
+                .catch(error => console.error("Error sending message:", error));
         }
-    }
 
-    // Save user data to Firebase
-    function saveUserData() {
-        set(ref(database, 'users/' + userDetails.telegramId), { ...userDetails });
-    }
+        function showAds() {
+            show_8873343().then(() => {
+                points++;
+                document.getElementById("points").textContent = points;
 
-    // Dummy function to simulate ad display (Replace with actual ad SDK)
-    function show_8767766() {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                alert("Ad Shown (Simulated)");  // Replace with real ad display function
-                resolve();
-            }, 1000);
-        });
-    }
+                // Save points to localStorage
+                localStorage.setItem('points', points);
 
-    // Function to show ads and increase points
-    function showAds() {
-        show_8767766().then(() => {
-            points++;
-            document.getElementById("points").textContent = points;
-        });
-    }
+                document.getElementById("adPopup").style.display = "block";
+                setTimeout(() => {
+                    document.getElementById("adPopup").style.display = "none";
+                }, 3000);
+            }).catch(() => {
+                document.getElementById("failPopup").style.display = "block";
+                setTimeout(() => {
+                    document.getElementById("failPopup").style.display = "none";
+                }, 3000);
+            });
+        }
 
-    // Load Firebase settings
-    function loadFirebaseSettings() {
-        get(ref(database, 'settings')).then((snapshot) => {
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                document.getElementById("minWithdraw").textContent = data.minWithdraw;
-                document.getElementById("totalReferrals").textContent = data.totalReferrals || 0;
-                document.getElementById("notice").textContent = data.notice || "Welcome!";
+        function showWithdrawForm() {
+            if (points >= 0) {
+                document.getElementById("withdrawForm").style.display = "block";
+            } else {
+                alert("You need at least 5 points to withdraw.");
             }
-        });
-    }
+        }
 
-    // Toggle Withdraw Section
-    document.getElementById("withdrawToggle").addEventListener("click", () => {
-        document.getElementById("withdrawSection").classList.toggle("hidden");
-    });
+        function withdrawPoints() {
+            const withdrawNumber = document.getElementById("withdrawNumber").value;
+            const withdrawMethod = document.getElementById("withdrawMethod").value;
 
-    // Toggle Withdraw History Section
-    document.getElementById("withdrawHistoryToggle").addEventListener("click", () => {
-        document.getElementById("withdrawHistory").classList.toggle("hidden");
-    });
+            if (!withdrawNumber) {
+                alert("Please enter your bKash/Nagad number!");
+                return;
+            }
 
-    // Referral System
-    document.getElementById("referButton").addEventListener("click", () => {
-        const link = `https://t.me/YOUR_TELEGRAM_BOT?start=${userDetails.telegramId}`;
-        document.getElementById("referralLink").innerHTML = `<strong>Your Link:</strong> <a href="${link}" target="_blank">${link}</a>`;
-        document.getElementById("referralSection").classList.remove("hidden");
-    });
+            const message = `User has requested a withdrawal.\nPoints: ${points}\nMethod: ${withdrawMethod}\nNumber: ${withdrawNumber}`;
+            sendMessageToTelegram(message);
+            alert("Withdrawal successful! Your points have been reset.");
 
-    // Copy Referral Link
-    document.getElementById("copyRefer").addEventListener("click", () => {
-        navigator.clipboard.writeText(document.getElementById("referralLink").innerText);
-        alert("Referral link copied!");
-    });
-
-    // Initialize when window loads
-    window.onload = () => {
-        fetchUserDetails();
-        loadFirebaseSettings();
-    };
-
-</script>
+            // Reset points and update localStorage
+            points = 0;
+            localStorage.setItem('points', points);
+            document.getElementById("points").textContent = points;
+            document.getElementById("withdrawForm").style.display = "none";
+        }
+    </script>
 
 </body>
 </html>
