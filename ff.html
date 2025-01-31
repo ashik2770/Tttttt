@@ -114,10 +114,10 @@
 
         <p>Total Referrals: <span id="totalReferrals">0</span></p>
 
-        <button class="button button-ads" onclick="showAds()">🎥 Show Ad</button>
+        <button class="button button-ads" onclick="showAds()">ðŸŽ¥ Show Ad</button>
         <p>Points: <span id="points">0</span></p>
 
-        <button class="button button-withdraw" id="withdrawToggle">💰 Withdraw</button>
+        <button class="button button-withdraw" id="withdrawToggle">ðŸ’° Withdraw</button>
 
         <div class="withdrawal hidden" id="withdrawSection">
             <h3>💰 Request Withdrawal</h3>
@@ -133,21 +133,22 @@
 
         <button class="button button-withdraw" id="withdrawHistoryToggle">📜 Withdraw History</button>
         <div class="history hidden" id="withdrawHistory">
-            <h3>📜 Your Withdrawals</h3>
+            <h3>💵  Your Withdrawals</h3>
             <ul id="withdrawList"></ul>
         </div>
 
-        <button class="button button-refer" id="referButton">🔗 Get Referral Link</button>
+        <button class="button button-refer" id="referButton">Get Referral Link</button>
         <div class="referral hidden" id="referralSection">
             <p id="referralLink">Invite friends and earn rewards!</p>
-            <button class="copy-btn" id="copyRefer">📋 Copy</button>
+            <button class="copy-btn" id="copyRefer">Copy</button>
         </div>
     </div>
 
     <script src="//whephiwums.com/vignette.min.js" data-zone="8767766"></script>
 
     <!-- Firebase SDK -->
-    <script type="module">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
     import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
 
@@ -173,7 +174,7 @@
     // Fetch user details from Telegram WebApp API
     function fetchUserDetails() {
         Telegram.WebApp.ready();
-        const tgUser = Telegram.WebApp.initDataUnsafe.user;
+        const tgUser = Telegram.WebApp.initDataUnsafe?.user;
         if (tgUser) {
             userDetails = {
                 fullName: `${tgUser.first_name} ${tgUser.last_name || ""}`,
@@ -240,7 +241,7 @@
 
     // Referral System
     document.getElementById("referButton").addEventListener("click", () => {
-        const link = `https://t.me/YOUR_TELEGRAM_BOT?start=${userDetails.telegramId}`;
+        const link = `https://t.me/test_aj_king_bot?start=${userDetails.telegramId}`;
         document.getElementById("referralLink").innerHTML = `<strong>Your Link:</strong> <a href="${link}" target="_blank">${link}</a>`;
         document.getElementById("referralSection").classList.remove("hidden");
     });
